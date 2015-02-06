@@ -56,7 +56,11 @@ function bctt_shortcode( $atts ) {
 					'url'		=> 'yes',
    				 ), $atts ) );
 		    	$handle = get_option( 'bctt-twitter-handle' );
-		    	$handle_length = ( 6 + mb_strlen($handle));
+		    	if ( extension_loaded( 'mbstring' ) ) { 
+		    		$handle_length = ( 6 + mb_strlen($handle));
+		    	} else {
+		    		$handle_length = ( 6 + strlen($handle));
+		    	}
 		    
 		    if ( !empty( $handle ) && $via != 'no' ) {
 		        $handle_code = "&via=" . $handle . "&related=" . $handle;
