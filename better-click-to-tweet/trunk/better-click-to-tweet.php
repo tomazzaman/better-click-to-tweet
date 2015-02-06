@@ -18,15 +18,35 @@ function bctt_shorten( $input, $length, $ellipsis = true, $strip_html = true ) {
 		    if ( $strip_html ) {
 		        $input = strip_tags( $input );
 		    }
-		    if ( mb_strlen( $input ) <= $length ) {
-		        return $input;
-		    }
-		    $last_space = mb_strrpos( mb_substr( $input, 0, $length) , ' ');
-		    $trimmed_text = mb_substr( $input, 0, $last_space );
-		    if ( $ellipsis ) {
-		        $trimmed_text .= '…';
-		    }
-		    return $trimmed_text;
+
+		    /* 
+		    * 	Checks to see if the mbstring php extension is loaded, for optimal truncation. 
+		    *	If it's not, it bails and counts the characters based on utf-8. 
+		    *	What this means for users is that non-Roman characters will only be counted 
+		    *	correctly if that extension is loaded. Contact your server admin to enable the extension.
+		    */
+
+		    if ( extension_loaded( 'mbstring' ) ) { 
+		    	if ( mb_strlen( $input ) <= $length ) {
+		        	return $input;
+		    	}
+		    	$last_space = mb_strrpos( mb_substr( $input, 0, $length) , ' ');
+		    	$trimmed_text = mb_substr( $input, 0, $last_space );
+		    	if ( $ellipsis ) {
+		        	$trimmed_text .= '…';
+		    	}
+		    	return $trimmed_text;
+			} else {
+				if ( strlen( $input ) <= $length ) {
+		        	return $input;
+		    	}
+		    	$last_space = strrpos( substr( $input, 0, $length) , ' ');
+		    	$trimmed_text = substr( $input, 0, $last_space );
+		    	if ( $ellipsis ) {
+		        	$trimmed_text .= '…';
+		    	}
+		    	return $trimmed_text;
+		    	}
 		};
 		
 function bctt_shortcode( $atts ) {
